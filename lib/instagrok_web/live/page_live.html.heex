@@ -1,0 +1,6 @@
+<%= if @current_user do %>
+  <%= link "Log Out", to: Routes.user_session_path(@socket, :delete), method: :delete %>
+  <h1>User Logged In Homepage</h1>
+<% else %>
+  <.live_component module={InstagrokWeb.LandingComponentLive} id="landing" changeset={@changeset} trigger_submit={@trigger_submit} /> 
+<% end %>
