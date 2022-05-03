@@ -19,7 +19,8 @@ defmodule InstagrokWeb.Router do
 
   scope "/", InstagrokWeb do
     pipe_through :browser
-    live "/", PageLive
+    live "/", PageLive, :index
+    live "/scratch", ScratchLive, :index
 
     # get "/", PageController, :index
   end
