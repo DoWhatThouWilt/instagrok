@@ -8,25 +8,10 @@ defmodule Instagrok.Accounts do
 
   alias Instagrok.Accounts.{User, UserToken, UserNotifier}
 
-  alias InstagrokWeb.UserAuth
-
-  @doc """
-  Delete all user tokens and broadcast to all LiveViews to immediately disconnect the user
-  """
-  def log_out_user(token) do
-    user = get_user_by_session_token(token)
-
-    # Delete all user tokens
-    Repo.delete_all(UserToken.user_and_contexts_query(user, :all))
-
-    # Broadcast to all LiveViews to immediately disconnect the user
-    InstagrokWeb.Endpoint.broadcast_from(
-      self(),
-      UserAuth.pubsub_topic(),
-      %{
-        user: user
-      }
-    )
+  def update_user(%User{} = user, attrs) do
+    user
+    |> User.registration_changeset(attrs, register_user: false)
+    |> Repo.update()
   end
 
   ## Database getters
@@ -99,6 +84,14 @@ defmodule Instagrok.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Returns an '%Ecto.Changeset{}' for tracking user changes to
+  their profile without password validation.
+  """
+  def change_user(user, attrs \\ %{}) do
+    User.registration_changeset(user, attrs, register_user: false)
   end
 
   @doc """

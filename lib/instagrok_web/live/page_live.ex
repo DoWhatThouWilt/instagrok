@@ -20,7 +20,6 @@ defmodule InstagrokWeb.PageLive do
       |> User.registration_changeset(user_params)
       |> Map.put(:action, :validate)
 
-    :timer.sleep(3000)
     {:noreply, socket |> assign(changeset: changeset)}
   end
 

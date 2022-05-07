@@ -44,7 +44,7 @@
         <li
             phx-click={toggle_dropdown()}
             class="w-7 h-7 ml-6 shadow-md rounded-full overflow-hidden cursor-pointer">
-          <%= img_tag Routes.static_path(@socket, "/images/default-avatar.png")%>
+          <%= img_tag InstagrokWeb.Uploaders.Avatar.get_thumb(@current_user.avatar_url, maybe_default: true) %>
         </li>
 
         <%# Logged in dropdown menu %>
@@ -58,7 +58,7 @@
             <li class="py-2 px-4 hover:bg-gray-50">Profile</li>
           <% end %>
           <li class="py-2 px-4 hover:bg-gray-50">Saved</li>
-          <%= live_patch to: "" do %>
+          <%= live_patch to: Routes.live_path(@socket, InstagrokWeb.UserLive.Settings) do %>
             <li class="py-2 px-4 hover:bg-gray-50">Settings</li>
           <% end %>
         </ul>
