@@ -8,6 +8,10 @@ defmodule Instagrok.Accounts do
 
   alias Instagrok.Accounts.{User, UserToken, UserNotifier}
 
+  def get_user_by_username(username) do
+    Repo.get_by!(User, username: username)
+  end
+
   def update_user(%User{} = user, attrs) do
     user
     |> User.registration_changeset(attrs, register_user: false)
@@ -227,6 +231,13 @@ defmodule Instagrok.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  def update_user_password_without_logout(user, password, attrs) do
+    user
+    |> User.password_changeset(attrs)
+    |> User.validate_current_password(password)
+    |> Repo.update()
   end
 
   ## Session

@@ -3,6 +3,11 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+.button {
+  @apply py-1 px-5 border-none shadow rounded text-gray-50 hover:bg-sky-600 bg-sky-500;
+}
+
+
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;

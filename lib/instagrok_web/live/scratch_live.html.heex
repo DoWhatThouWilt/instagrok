@@ -1,0 +1,8 @@
+<%= @current_user.username %>
+
+<.live_component 
+  module={InstagrokWeb.UserLive.EditProfile}
+  id={:edit_profile}
+  current_user={@current_user}
+  changeset={@changeset}/>
+

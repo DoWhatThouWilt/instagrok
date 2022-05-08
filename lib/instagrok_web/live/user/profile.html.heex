@@ -1,0 +1,55 @@
+<header class="flex justify-center px-10">
+
+  <!-- Profile Picture -->
+  <section class="w-1/4">
+    <%= img_tag @user.avatar_url,
+        class: "w-40 h-40 rounded-full object-cover object-center" %>
+  </section>
+  <!-- END Profile Picture -->
+
+  <!-- Profile Details Section -->
+  <section class="w-3/4">
+    <div class="flex px-3 pt-3">
+      <h1 class="mb-3 truncate md:overflow-clip text-2xl text-gray-500">
+        <%= @user.username %>
+      </h1>
+      <span class="ml-11">
+        <button class="button">
+          Follow
+        </button>
+      </span>
+    </div>
+
+    <div>
+      <ul class="flex p-3">
+        <li><b>0</b> Posts</li>
+        <li class="ml-11"><b>0</b> Followers</li>
+        <li class="ml-11"><b>0</b> Following</li>
+      </ul>
+    </div>
+
+    <div class="p-3">
+      <h2 class="text-md text-gray-600 font-bold"><%= @user.full_name %></h2>
+      <%= if @user.bio do %>
+        <p class="max-w-full break-words"><%= @user.bio %></p>
+      <% end %>
+      <%= if @user.website do %>
+        <%= link display_website_uri(@user.website),
+          to: @user.website,
+          target: "_blank", rel: "noreferrer",
+          class: "text-blue-700"
+        %>
+      <% end %>
+    </div>
+  </section>
+  <!-- END Profile Details Section -->
+</header>
+
+<section class="border-t-2 mt-5">
+  <ul class="flex justify-center text-center space-x-20">
+    <li class="pt-4 px-1 text-sm text-gray-600 border-t-2 border-black -mt-0.5">POSTS</li>
+    <li class="pt-4 px-1 text-sm text-gray-400">IGTV</li>
+    <li class="pt-4 px-1 text-sm text-gray-400">SAVED</li>
+    <li class="pt-4 px-1 text-sm text-gray-400">TAGGED</li>
+  </ul>
+</section>

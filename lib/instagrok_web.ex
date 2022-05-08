@@ -48,12 +48,24 @@ defmodule InstagrokWeb do
         layout: {InstagrokWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
+      alias Instagrok.Accounts.User
+      alias Instagrok.Accounts
 
       @impl true
-      def handle_params(_unsigned_params, uri, socket) do
-        {:noreply,
-         socket
-         |> assign(current_uri_path: URI.parse(uri).path)}
+      def handle_params(params, uri, socket) do
+        if Map.has_key?(params, "username") do
+          %{"username" => username} = params
+          user = Accounts.get_user_by_username(username)
+
+          {:noreply,
+           socket
+           |> assign(current_uri_path: URI.parse(uri).path)
+           |> assign(user: user, page_title: "#{user.full_name} #{user.username}")}
+        else
+          {:noreply,
+           socket
+           |> assign(current_uri_path: URI.parse(uri).path)}
+        end
       end
     end
   end

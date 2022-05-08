@@ -15,6 +15,8 @@ defmodule InstagrokWeb.PageLive do
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
+    IO.inspect(user_params)
+
     changeset =
       %User{}
       |> User.registration_changeset(user_params)
