@@ -33,6 +33,7 @@ defmodule Instagrok.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:ecto_fields, "~> 1.3.0"},
       {:mogrify, "~> 0.8.0"},
       {:bcrypt_elixir, "~> 2.0"},
       {:phoenix, "~> 1.6.6"},

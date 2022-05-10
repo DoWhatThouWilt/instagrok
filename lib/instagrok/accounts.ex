@@ -1,4 +1,6 @@
 defmodule Instagrok.Accounts do
+  alias Instagrok.Accounts.Follows
+
   @moduledoc """
   The Accounts context.
   """
@@ -373,6 +375,35 @@ defmodule Instagrok.Accounts do
     |> case do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
+    end
+  end
+
+  @doc """
+  Creates a follow to the given user. First, it builds a new
+  user association with build_assoc for preloading the user when the
+  associations are loaded. Secondly, it gets the users to
+  update their counts. Finally, it preforms 3 Repo operations:
+
+  used as create_follow(current_user, user_to_follow, current_user)
+  """
+  def create_follow(follower, following) do
+    follower = Ecto.build_assoc(follower, :followers)
+    follow = Ecto.build_assoc(following, :following, follower)
+    # takes the id of the follower and puts it in the association
+    # if user_1 followers user_2, then this Follows struct is created:
+    # %Follows{follower_id: 1, following_id: 2}
+    update_following_count = from(u in User, where: u.id == ^follower.id, select: u)
+    update_followers_count = from(u in User, where: u.id == ^following.id, select: u)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:follow, follow)
+    |> Ecto.Multi.update_all(:update_following, update_following_count, inc: [following_count: 1])
+    |> Ecto.Multi.update_all(:update_followers, update_followers_count, inc: [followers_count: 1])
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{update_followers: update_followers}} ->
+        {1, user} = update_followers
+        hd(user)
     end
   end
 end

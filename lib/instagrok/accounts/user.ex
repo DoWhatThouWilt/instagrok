@@ -1,6 +1,9 @@
 defmodule Instagrok.Accounts.User do
   use Ecto.Schema
+  import Ecto.Schema
   import Ecto.Changeset
+
+  alias Instagrok.Accounts.Follows
 
   schema "users" do
     field :email, :string
@@ -12,6 +15,10 @@ defmodule Instagrok.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :followers_count, :integer, default: 0
+    field :following_count, :integer, default: 0
+    has_many :following, Follows, foreign_key: :following_id
+    has_many :followers, Follows, foreign_key: :follower_id
 
     timestamps()
   end
@@ -41,11 +48,24 @@ defmodule Instagrok.Accounts.User do
     |> validate_format(:username, ~r/^[a-zA-Z0-9_.-]*$/,
       message: "Please use letters and numbers without space(only characters allowed _ . -)"
     )
+    |> validate_website()
     |> unique_constraint(:username)
     |> unsafe_validate_unique(:username, Instagrok.Repo)
     |> validate_length(:full_name, min: 4, max: 30)
     |> validate_email()
     |> validate_password(opts)
+  end
+
+  def validate_website(changeset) do
+    validate_change(changeset, :website, fn :website, website ->
+      case EctoFields.URL.cast(website) do
+        {:ok, _website} ->
+          []
+
+        :error ->
+          [website: "Enter a valid website"]
+      end
+    end)
   end
 
   defp validate_email(changeset) do

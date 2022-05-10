@@ -14,9 +14,24 @@
         <%= @user.username %>
       </h1>
       <span class="ml-11">
-        <button class="button">
-          Follow
-        </button>
+        <%= cond do %>
+
+          <% @current_user && @current_user == @user -> %>
+            <%= live_patch "Edit Profile",
+              to: Routes.user_settings_path(@socket, :profile),
+              class: "py-1 px-2 border-2 rounded font-semibold hover:bg-gray-50"%>
+          
+          <% @current_user -> %>
+            <.live_component
+            module={FollowComponent}
+            id={:follow}
+            follow_state={@follow_state}
+            />
+
+            <% true -> %>
+              <%= link "Follow", to: Routes.user_session_path(@socket, :new), class: "button" %>
+
+        <% end %>
       </span>
     </div>
 

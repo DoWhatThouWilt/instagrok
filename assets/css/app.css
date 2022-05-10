@@ -7,6 +7,14 @@
   @apply py-1 px-5 border-none shadow rounded text-gray-50 hover:bg-sky-600 bg-sky-500;
 }
 
+.follow {
+  @apply capitalize py-1 px-5 border-none shadow rounded text-gray-50 hover:bg-sky-600 bg-sky-500;
+}
+
+.unfollow {
+  @apply capitalize py-1 px-2 text-red-500 border-2 rounded font-semibold bg-white hover:bg-gray-50;
+}
+
 
 /* Alerts and form errors used by phx.new */
 .alert {
