@@ -6,8 +6,8 @@ defmodule Instagrok.Accounts.Follows do
   alias Instagrok.Accounts.User
 
   schema "account_follows" do
-    belongs_to :following, User
     belongs_to :follower, User
+    belongs_to :followed, User
 
     timestamps()
   end

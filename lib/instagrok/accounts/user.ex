@@ -17,8 +17,8 @@ defmodule Instagrok.Accounts.User do
     field :confirmed_at, :naive_datetime
     field :followers_count, :integer, default: 0
     field :following_count, :integer, default: 0
-    has_many :following, Follows, foreign_key: :following_id
-    has_many :followers, Follows, foreign_key: :follower_id
+    has_many :following, Follows, foreign_key: :follower_id
+    has_many :followers, Follows, foreign_key: :followed_id
 
     timestamps()
   end

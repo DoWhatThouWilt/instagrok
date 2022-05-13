@@ -379,21 +379,36 @@ defmodule Instagrok.Accounts do
   end
 
   @doc """
-  Creates a follow to the given user. First, it builds a new
-  user association with build_assoc for preloading the user when the
-  associations are loaded. Secondly, it gets the users to
-  update their counts. Finally, it preforms 3 Repo operations:
+  Builds a follow association for an user following another user,
+  then updates the following/follower counts of each user,
+  returning the user that was followed.
 
-  used as create_follow(current_user, user_to_follow, current_user)
+  Accounts.create_follow(current_user, user, current_user)
+
+                            ┌─────────────────────┐
+                            │User 2 follows User 3│
+                            └─────────────────────┘
+   who is User 2          Foreign Keys in Follows Schema        who followed
+   following?        ┌────────────────┐ ┌────────────────┐      User 3?
+           ┌─────────┤ follower_id: 2 │ │ followed_id: 3 ├─────────┐
+           │         └────────────────┘ └────────────────┘         │
+           │              Each user references itself              │
+           │                                                       │
+   User 2  │                User 2 is the follower                 │  User 3
+  ┌────────▼─────────┐       User 3 got followed         ┌─────────▼────────┐
+  │:following        │                                   │:followers        │
+  │                  │                                   │                  │
+  │followed_id: 3 ───┼────► User 3                       │followed_id: 3    │
+  │                  │                                   │                  │
+  │following_id: 2   │                     User 2 ◄──────┤follower_id: 2    │
+  │                  │                                   │                  │
+  └──────────────────┘                                   └──────────────────┘
   """
-  def create_follow(follower, following) do
-    follower = Ecto.build_assoc(follower, :followers)
-    follow = Ecto.build_assoc(following, :following, follower)
-    # takes the id of the follower and puts it in the association
-    # if user_1 followers user_2, then this Follows struct is created:
-    # %Follows{follower_id: 1, following_id: 2}
-    update_following_count = from(u in User, where: u.id == ^follower.id, select: u)
-    update_followers_count = from(u in User, where: u.id == ^following.id, select: u)
+  def create_follow(follower_user, followed_user) do
+    follower_assoc = Ecto.build_assoc(follower_user, :following)
+    follow = Ecto.build_assoc(followed_user, :followers, follower_assoc)
+    update_following_count = from(u in User, where: u.id == ^follower_user.id, select: u)
+    update_followers_count = from(u in User, where: u.id == ^followed_user.id, select: u)
 
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:follow, follow)
@@ -405,5 +420,54 @@ defmodule Instagrok.Accounts do
         {1, user} = update_followers
         hd(user)
     end
+  end
+
+  @doc """
+  Deletes the follow association for an user by
+  id, returning the unfollowed user
+  """
+  def unfollow(follower_id, followed_id) do
+    follow = following?(follower_id, followed_id)
+    update_following_count = from(u in User, where: u.id == ^follower_id)
+    update_followers_count = from(u in User, where: u.id == ^followed_id, select: u)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:follow, follow)
+    |> Ecto.Multi.update_all(:update_following, update_following_count, inc: [following_count: -1])
+    |> Ecto.Multi.update_all(:update_followers, update_followers_count, inc: [followers_count: -1])
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{update_followers: update_followers}} ->
+        {1, user} = update_followers
+        hd(user)
+    end
+  end
+
+  @doc """
+  Returns the %Follows{} association schema by the
+  primary keys of the follower user and the followed,
+  otherwise returns nil if no relationship is found.
+  """
+  def following?(follower_id, followed_id) do
+    Repo.get_by(Follows, follower_id: follower_id, followed_id: followed_id)
+  end
+
+  @doc """
+  Returns all users that are currently being followed
+  by a given user
+  """
+  def list_following(user) do
+    user
+    |> Repo.preload(following: [:followed])
+    |> Map.get(:following)
+  end
+
+  @doc """
+  Returns all followers of a given user
+  """
+  def list_followers(user) do
+    user
+    |> Repo.preload(followers: [:follower])
+    |> Map.get(:followers)
   end
 end

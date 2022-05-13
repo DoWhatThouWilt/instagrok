@@ -26,6 +26,8 @@
             module={FollowComponent}
             id={:follow}
             follow_state={@follow_state}
+            user={@user}
+            current_user={@current_user}
             />
 
             <% true -> %>
@@ -38,8 +40,8 @@
     <div>
       <ul class="flex p-3">
         <li><b>0</b> Posts</li>
-        <li class="ml-11"><b>0</b> Followers</li>
-        <li class="ml-11"><b>0</b> Following</li>
+        <li class="ml-11"><b><%= @user.followers_count %></b> Followers</li>
+        <li class="ml-11"><b><%= @user.following_count %></b> Following</li>
       </ul>
     </div>
 

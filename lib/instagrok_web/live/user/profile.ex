@@ -21,4 +21,8 @@ defmodule InstagrokWeb.UserLive.Profile do
     |> URI.parse()
     |> Map.get(:host)
   end
+
+  def handle_info({FollowComponent, :update_totals, updated_user}, socket) do
+    {:noreply, socket |> assign(user: updated_user)}
+  end
 end
