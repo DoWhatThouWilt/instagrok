@@ -15,7 +15,6 @@ defmodule InstagrokWeb.UserLive.FollowComponent do
   def render(assigns) do
     ~H"""
     <button
-      id="follow_btn"
       phx-target={@myself}
       phx-click="toggle"
       class={@follow_state}

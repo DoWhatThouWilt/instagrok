@@ -1,7 +1,13 @@
 
 <%= if @live_action in [:followers, :following] do %>
   <.modal width="w-1/4" return_to={Routes.user_profile_path(@socket, :index, @user.username)}>
-  <.live_component live_action={@live_action} module={UserLive.FollowersComponent} id={:follows} follows={@follows} /> 
+  <.live_component 
+          live_action={@live_action} 
+          module={UserLive.FollowersComponent} 
+          id={:follows} 
+          follows={@follows}
+          current_user={@current_user}
+          /> 
   </.modal>
 <% end %>
 

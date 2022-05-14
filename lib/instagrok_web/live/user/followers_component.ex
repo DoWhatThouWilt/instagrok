@@ -2,6 +2,7 @@ defmodule InstagrokWeb.UserLive.FollowersComponent do
   use InstagrokWeb, :live_component
 
   alias InstagrokWeb.Uploaders.Avatar
+  alias InstagrokWeb.UserLive.FollowComponent
 
   def render(assigns) do
     ~H"""
@@ -13,6 +14,7 @@ defmodule InstagrokWeb.UserLive.FollowersComponent do
       <%= for follow <- @follows do %>
         <div class="p-4">
           <div class="flex items-center">
+
             <%= live_redirect to: Routes.user_profile_path(@socket, :index, follow.username) do %>
               <%= img_tag Avatar.get_thumb(follow.avatar_url, maybe_default: true), class: "w-10 h-10 rounded-full object-cover object-center" %>
             <% end %>
@@ -25,6 +27,17 @@ defmodule InstagrokWeb.UserLive.FollowersComponent do
                 <%= follow.full_name %>
               </h6>
             </div>
+
+            <%= if @current_user !== follow do %>
+              <span class="ml-auto">
+                <.live_component
+                  module={FollowComponent}
+                  id={follow.id}
+                  user={follow}
+                  current_user={@current_user}
+                />
+              </span>
+            <% end %>
           </div>
         </div>
       <% end %>
