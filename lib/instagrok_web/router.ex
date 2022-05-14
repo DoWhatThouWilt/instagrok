@@ -23,7 +23,7 @@ defmodule InstagrokWeb.Router do
     live "/scratch", ScratchLive, :index
 
     live "/", PageLive, :index
-    live "/:username", UserLive.Profile
+    live "/:username", UserLive.Profile, :index
 
     # get "/", PageController, :index
   end
@@ -79,6 +79,9 @@ defmodule InstagrokWeb.Router do
 
   scope "/", InstagrokWeb do
     pipe_through [:browser, :require_authenticated_user]
+
+    live "/:username/following", UserLive.Profile, :following
+    live "/:username/followers", UserLive.Profile, :followers
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update

@@ -50,23 +50,6 @@ defmodule InstagrokWeb do
       unquote(view_helpers())
       alias Instagrok.Accounts.User
       alias Instagrok.Accounts
-
-      @impl true
-      def handle_params(params, uri, socket) do
-        if Map.has_key?(params, "username") do
-          %{"username" => username} = params
-          user = Accounts.get_user_by_username(username)
-
-          {:noreply,
-           socket
-           |> assign(current_uri_path: URI.parse(uri).path)
-           |> assign(user: user, page_title: "#{user.full_name} #{user.username}")}
-        else
-          {:noreply,
-           socket
-           |> assign(current_uri_path: URI.parse(uri).path)}
-        end
-      end
     end
   end
 
@@ -110,6 +93,7 @@ defmodule InstagrokWeb do
 
       # Import LiveView and .heex helpers (live_render, live_patch, <.form>, etc)
       import Phoenix.LiveView.Helpers
+      import InstagrokWeb.LiveHelpers
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View

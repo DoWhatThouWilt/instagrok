@@ -14,6 +14,12 @@ defmodule InstagrokWeb.PageLive do
      |> assign(trigger_submit: false)}
   end
 
+  def handle_params(_params, _uri, socket) do
+    {:noreply,
+     socket
+     |> assign(live_action: apply_action(socket.assigns.current_user))}
+  end
+
   def handle_event("validate", %{"user" => user_params}, socket) do
     IO.inspect(user_params)
 
@@ -27,5 +33,9 @@ defmodule InstagrokWeb.PageLive do
 
   def handle_event("save", _params, socket) do
     {:noreply, socket |> assign(trigger_submit: true)}
+  end
+
+  defp apply_action(current_user) do
+    if !current_user, do: :root_path
   end
 end

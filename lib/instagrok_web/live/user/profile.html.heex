@@ -1,3 +1,10 @@
+
+<%= if @live_action in [:followers, :following] do %>
+  <.modal width="w-1/4" return_to={Routes.user_profile_path(@socket, :index, @user.username)}>
+  <.live_component live_action={@live_action} module={UserLive.FollowersComponent} id={:follows} follows={@follows} /> 
+  </.modal>
+<% end %>
+
 <header class="flex justify-center px-10">
 
   <!-- Profile Picture -->
@@ -16,22 +23,27 @@
       <span class="ml-11">
         <%= cond do %>
 
+          <%# logged in user's profile %>
           <% @current_user && @current_user == @user -> %>
             <%= live_patch "Edit Profile",
               to: Routes.user_settings_path(@socket, :profile),
               class: "py-1 px-2 border-2 rounded font-semibold hover:bg-gray-50"%>
           
+              <%# other user's profile %>
+              <%# weird bug: using the full qualifier of the FollowComponent module causes the handle_info %>
+              <%# call to break on the parent liveview %>
           <% @current_user -> %>
             <.live_component
             module={FollowComponent}
-            id={:follow}
+            id={:follow_button}
             follow_state={@follow_state}
             user={@user}
             current_user={@current_user}
             />
 
-            <% true -> %>
-              <%= link "Follow", to: Routes.user_session_path(@socket, :new), class: "button" %>
+          <%# not logged in %>
+          <% true -> %>
+            <%= link "Follow", to: Routes.user_session_path(@socket, :new), class: "button" %>
 
         <% end %>
       </span>
@@ -40,8 +52,14 @@
     <div>
       <ul class="flex p-3">
         <li><b>0</b> Posts</li>
-        <li class="ml-11"><b><%= @user.followers_count %></b> Followers</li>
-        <li class="ml-11"><b><%= @user.following_count %></b> Following</li>
+        <li class="ml-11">
+          <b><%= @user.followers_count %></b>
+        <%= live_patch "Followers", to: Routes.user_profile_path(@socket, :followers, @user.username)%>
+        </li>
+        <li class="ml-11">
+          <b><%= @user.following_count %></b>
+        <%= live_patch "Following", to: Routes.user_profile_path(@socket, :following, @user.username)%>
+        </li>
       </ul>
     </div>
 

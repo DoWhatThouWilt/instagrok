@@ -1,7 +1,7 @@
 <%= if @current_user do %>
   <.live_component module={InstagrokWeb.HeaderNavComponent} id="nav" current_user={@current_user} />
 <% else %>
-  <%= if @current_uri_path !== "/" do %>
+  <%= if @live_action !== :root_path do %>
     <.live_component module={InstagrokWeb.HeaderNavComponent} id="nav" current_user={@current_user} />
   <% end %>
 <% end %>
