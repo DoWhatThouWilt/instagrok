@@ -29,7 +29,14 @@ defmodule InstagrokWeb.UserLive.Profile do
   end
 
   def handle_info({FollowComponent, :update_totals, updated_user}, socket) do
-    {:noreply, socket |> assign(user: updated_user)}
+    # in the followers/following modal, the current user may follow/unfollow 
+    # another user that is not the user of the current profile page they
+    # are on. In that case, we do not want the displayed user to be updated.
+    if updated_user.id == socket.assigns.user.id do
+      {:noreply, socket |> assign(user: updated_user)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_params(_params, _url, socket) do
