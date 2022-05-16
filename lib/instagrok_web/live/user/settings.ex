@@ -21,6 +21,20 @@ defmodule InstagrokWeb.UserLive.Settings do
      |> assign(:changeset, changeset)}
   end
 
+  def handle_params(_params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action)}
+  end
+
+  defp apply_action(socket, :profile) do
+    socket
+    |> assign(:page_title, "Settings")
+  end
+
+  defp apply_action(socket, :password) do
+    socket
+    |> assign(:page_title, "Password")
+  end
+
   def active_tab?(action, tab) do
     if to_string(action) == tab do
       "border-l-2 border-black -ml-0.5 text-gray-900 font-semibold"

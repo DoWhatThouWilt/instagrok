@@ -24,8 +24,6 @@ defmodule InstagrokWeb.Router do
 
     live "/", PageLive, :index
     live "/:username", UserLive.Profile, :index
-
-    # get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.
@@ -80,15 +78,17 @@ defmodule InstagrokWeb.Router do
   scope "/", InstagrokWeb do
     pipe_through [:browser, :require_authenticated_user]
 
+    live "/p/new", PostLive.New
+
     live "/:username/following", UserLive.Profile, :following
     live "/:username/followers", UserLive.Profile, :followers
+
+    live "/accounts/edit", UserLive.Settings, :profile
+    live "/accounts/password/change", UserLive.Settings, :password
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
-
-    live "/accounts/edit", UserLive.Settings, :profile
-    live "/accounts/password/change", UserLive.Settings, :password
   end
 
   scope "/", InstagrokWeb do
@@ -99,5 +99,7 @@ defmodule InstagrokWeb.Router do
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :edit
     post "/users/confirm/:token", UserConfirmationController, :update
+
+    live "/p/:id", PostLive.Show
   end
 end
