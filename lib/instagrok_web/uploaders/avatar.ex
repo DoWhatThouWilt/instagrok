@@ -41,7 +41,8 @@ defmodule InstagrokWeb.Uploaders.Avatar do
       old_url |> get_thumb() |> rm_file()
 
       # consuming uploads requires a tagged tuple
-      {:ok, {Routes.static_path(socket, dest), Routes.static_path(socket, dest_thumb)}}
+      {:ok,
+       {Routes.static_path(socket, "/#{dest}"), Routes.static_path(socket, "/#{dest_thumb}")}}
     end)
 
     :ok

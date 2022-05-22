@@ -33,6 +33,8 @@ defmodule Instagrok.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:scrivener_ecto, "~> 2.7"},
+      {:faker, "~> 0.17", only: [:dev, :test]},
       {:ecto_fields, "~> 1.3.0"},
       {:mogrify, "~> 0.8.0"},
       {:bcrypt_elixir, "~> 2.0"},

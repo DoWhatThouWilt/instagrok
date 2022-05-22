@@ -9,6 +9,35 @@ defmodule Instagrok.Posts do
   alias Instagrok.Posts.Post
   alias Instagrok.Accounts.User
 
+  def paginate_user_posts(params, user_id) do
+    Post
+    |> where(user_id: ^user_id)
+    |> Repo.paginate(params)
+  end
+
+  def delete_all_posts(user_id) do
+    from(p in Post, where: p.user_id == ^user_id)
+    |> Repo.delete_all()
+  end
+
+  @doc """
+  Returns the list of paginated posts of a given user id.
+
+  ## Examples
+
+    iex> list_user_posts(page: 1, per_page: 10, user_id: 1)
+    [%{photo_url: "", url_id: ""}, ...]
+  """
+  def list_profile_posts(page: page, per_page: per_page, user_id: user_id) do
+    Post
+    |> select([p], map(p, [:url_id, :photo_url]))
+    |> where(user_id: ^user_id)
+    |> limit(^per_page)
+    |> offset(^((page - 1) * per_page))
+    |> order_by(desc: :id)
+    |> Repo.all()
+  end
+
   @doc """
   Returns the list of posts.
 
@@ -40,15 +69,6 @@ defmodule Instagrok.Posts do
 
   @doc """
   Creates a post.
-
-  ## Examples
-
-      iex> create_post(%{field: value})
-      {:ok, %Post{}}
-
-      iex> create_post(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
   """
   def create_post(%Post{} = post, attrs \\ %{}, user) do
     post = Ecto.build_assoc(user, :posts, put_url_id(post))
@@ -63,10 +83,6 @@ defmodule Instagrok.Posts do
     )
     |> Ecto.Multi.insert(:post, changeset)
     |> Repo.transaction()
-
-    # %Post{}
-    # |> Post.changeset(attrs)
-    # |> Repo.insert()
   end
 
   # Generates a base64-encoding 8 bytes

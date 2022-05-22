@@ -4,22 +4,35 @@ defmodule InstagrokWeb.UserLive.Profile do
   on_mount InstagrokWeb.UserLiveAuth
 
   alias Instagrok.Accounts
+  alias Instagrok.Posts
   alias InstagrokWeb.UserLive
   alias InstagrokWeb.UserLive.FollowComponent
 
   def mount(%{"username" => username}, _session, socket) do
     user = Accounts.get_user_by_username(username)
 
-    {:ok,
-     socket
-     |> assign(user: user)
-     |> assign(page_title: "@#{user.username}")
-     |> assign(follow_state: "follow")
-     |> assign(username: username)}
+    {
+      :ok,
+      socket
+      |> assign(user: user)
+      |> assign(page_title: "@#{user.username}")
+      |> assign(follow_state: "follow")
+      |> assign(page: 1, page_size: 9)
+      |> assign_posts(),
+      temporary_assigns: [posts: []]
+    }
   end
 
-  def follow_state(state) do
-    state
+  defp assign_posts(%{assigns: %{page: page, page_size: page_size, user: user}} = socket) do
+    page = Posts.paginate_user_posts(%{page: page, page_size: page_size}, user.id)
+    assign(socket, posts: page.entries)
+  end
+
+  def handle_event("load-posts", _params, %{assigns: assigns} = socket) do
+    {:noreply,
+     socket
+     |> assign(page: assigns.page + 1)
+     |> assign_posts()}
   end
 
   def display_website_uri(site) do

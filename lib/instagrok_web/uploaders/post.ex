@@ -11,18 +11,30 @@ defmodule InstagrokWeb.Uploaders.Post do
     MIME.extensions(entry.client_type) |> hd()
   end
 
+  # this has to be done, because the insertion of the photo_url
+  # into the post comes before the upload is consumed.
+  # I would have prefered to just get the path from the 
+  # return of the consume_uploaded_entries/3 if it was
+  # possible....
   def put_image_url(socket, %Post{} = post) do
-    {completed, []} = uploaded_entries(socket, :photo_url)
+    # {completed, []} = uploaded_entries(socket, :photo_url)
 
-    urls =
-      for entry <- completed do
-        Routes.static_path(
-          socket,
-          "/uploads/#{entry.uuid}.#{ext(entry)}"
-        )
-      end
+    # urls =
+    #   for entry <- completed do
+    #     Routes.static_path(
+    #       socket,
+    #       "/uploads/#{entry.uuid}.#{ext(entry)}"
+    #     )
+    #   end
+    {[completed], []} = uploaded_entries(socket, :photo_url)
 
-    %Post{post | photo_url: List.to_string(urls)}
+    url =
+      Routes.static_path(
+        socket,
+        "/uploads/#{completed.uuid}.#{ext(completed)}"
+      )
+
+    %Post{post | photo_url: url}
   end
 
   def save(socket) do
