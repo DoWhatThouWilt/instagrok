@@ -1,11 +1,11 @@
-<section class="flex items-stretch h-[80vh]">
+<section class="flex">
 
   <!-- post image section -->
-  <div class="h-full w-3/5 bg-black flex items-center justify-center">
-    <%= img_tag @post.photo_url, class: "h-full object-contain"%>
-  </div>
+  <%= img_tag @post.photo_url, class: "w-3/5 aspect-[4/5] object-contain"%>
   <!-- end post image section-->
 
+  <!-- I want this box of information to be the same size as the picture, which is -->
+  <!-- why I choose to make it flex-col -->
   <div class="w-2/5 border-2 flex flex-col">
     <div class="flex p-4 items-center border-b-2">
 
@@ -22,7 +22,7 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
       <!-- end post header section -->
     </div>
 
-    <div class="no-scrollbar overflow-y-scroll p-4 flex flex-col">
+    <div class="no-scrollbar overflow-y-scroll p-4 flex flex-col h-96">
       <!-- description section -->
       <%= for _ <- 1..5 do %>
 
@@ -51,7 +51,7 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
     </div>
 
     <!-- Botttom Box -->
-    <div class="w-full border-t-2 mt-auto">
+    <div class="w-full border-t-2">
 
       <!-- action icons section -->
       <div class="flex pl-4 pr-2 pt-2">

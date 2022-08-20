@@ -9,6 +9,11 @@ defmodule Instagrok.Posts do
   alias Instagrok.Posts.Post
   alias Instagrok.Accounts.User
 
+  def get_post_by_url_id!(id) do
+    Repo.get_by!(Post, url_id: id)
+    |> Repo.preload(:user)
+  end
+
   def paginate_user_posts(params, user_id) do
     Post
     |> where(user_id: ^user_id)

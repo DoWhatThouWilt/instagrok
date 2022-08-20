@@ -25,14 +25,24 @@ defmodule InstagrokWeb.UserLive.Profile do
 
   defp assign_posts(%{assigns: %{page: page, page_size: page_size, user: user}} = socket) do
     page = Posts.paginate_user_posts(%{page: page, page_size: page_size}, user.id)
-    assign(socket, posts: page.entries)
+    assign(socket, posts: page.entries, total_pages: page.total_pages)
   end
 
-  def handle_event("load-posts", _params, %{assigns: assigns} = socket) do
+  def handle_event("load-posts", _params, socket) do
     {:noreply,
      socket
-     |> assign(page: assigns.page + 1)
+     # |> assign(page: assigns.page + 1)
+     |> maybe_next_page()
      |> assign_posts()}
+  end
+
+  # Don't increase the page number if it exceeds the total number of pages
+  defp maybe_next_page(%{assigns: assigns} = socket) do
+    if(assigns.page < assigns.total_pages) do
+      assign(socket, page: assigns.page + 1)
+    else
+      socket
+    end
   end
 
   def display_website_uri(site) do

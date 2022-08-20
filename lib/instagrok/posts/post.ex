@@ -10,6 +10,7 @@ defmodule Instagrok.Posts.Post do
     field :total_likes, :integer
     field :url_id, :string
     belongs_to :user, Instagrok.Accounts.User
+    has_many :likes, Instagrok.Likes.Like, foreign_key: :liked_id
 
     timestamps()
   end

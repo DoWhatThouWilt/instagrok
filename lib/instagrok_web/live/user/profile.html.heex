@@ -95,6 +95,9 @@
   </ul>
 </section>
 
+<!-- with phx-update using "append", a unique DOM ID must be added to the container as well as each child
+  https://hexdocs.pm/phoenix_live_view/dom-patching.html
+-->
 <div phx-update="append" id="infinite-scroll" class="mt-9 grid gap-8 grid-cols-3">
   <%= for post <- @posts do %>
     <%= live_redirect id: post.url_id, to: Routes.live_path(@socket, InstagrokWeb.PostLive.Show, post.url_id) do %>
