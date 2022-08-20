@@ -4,8 +4,7 @@ defmodule Instagrok.Likes.Like do
   import Ecto.Schema
 
   schema "likes" do
-    # The id of the liked post, I prefer :liked_post_id or :post_id
-    # with a simple belongs_to
+    # The id of the liked thing, post or comment 
     field :liked_id, :integer
     belongs_to :user, Instagrok.Accounts.User
 

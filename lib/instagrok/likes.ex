@@ -7,22 +7,23 @@ defmodule Instagrok.Likes do
   alias Instagrok.Repo
 
   alias Instagrok.Likes.Like
-  alias Instagrok.Posts.Post
   alias Instagrok.Accounts.User
 
   @doc """
   Creates a like with the id of a given user and the liked post
   """
-  def create_like(%User{} = user, %Post{} = liked_post) do
+  def create_like(%User{} = user, liked_post_or_comment) do
     # creates a like with the user_id
     # user = Ecto.build_assoc(user, :likes)
     # creates the a like with the liked_id (that is supposed to be the id of the liked post)
     # being the id of the post, and then, adds the user_id from the previous struct created
     # using the %{user_id: value} field (3rd parameter of build_assoc)
-    # like = Ecto.build_assoc(liked_post, :likes, user)
-    like = %Like{liked_id: liked_post.id, user_id: user.id}
+    # like = Ecto.build_assoc(liked_post_or_comment, :likes, user)
+    like = %Like{liked_id: liked_post_or_comment.id, user_id: user.id}
 
-    update_total_likes = Post |> where(id: ^liked_post.id)
+    # __struct__ returns the module of the struct, here is it used to diffrenciate
+    # between the Post or the Comment
+    update_total_likes = liked_post_or_comment.__struct__ |> where(id: ^liked_post_or_comment.id)
 
     Ecto.Multi.new()
     |> Ecto.Multi.insert(:like, like)
@@ -33,9 +34,9 @@ defmodule Instagrok.Likes do
   @doc """
   Delete a like with the id of a given user and the post that was unliked
   """
-  def unlike(%User{} = user, %Post{} = liked_post) do
-    like = get_like(user.id, liked_post)
-    update_total_likes = Post |> where(id: ^liked_post.id)
+  def unlike(%User{} = user, liked_post_or_comment) do
+    like = get_like(user.id, liked_post_or_comment)
+    update_total_likes = liked_post_or_comment.__struct__ |> where(id: ^liked_post_or_comment.id)
 
     Ecto.Multi.new()
     |> Ecto.Multi.delete(:like, like)
@@ -43,8 +44,8 @@ defmodule Instagrok.Likes do
     |> Repo.transaction()
   end
 
-  defp get_like(user_id, liked_post) do
-    Enum.find(liked_post.likes, &(&1.user_id == user_id))
+  defp get_like(user_id, liked_post_or_comment) do
+    Enum.find(liked_post_or_comment.likes, &(&1.user_id == user_id))
   end
 
   @doc """
