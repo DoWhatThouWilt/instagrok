@@ -2,15 +2,21 @@ defmodule InstagrokWeb.ScratchLive do
   use InstagrokWeb, :live_view
   alias Phoenix.LiveView.JS
   alias Instagrok.Accounts
-  alias InstagrokWeb.UserLive.FollowComponent
   on_mount InstagrokWeb.UserLiveAuth
 
   def mount(_params, _session, socket) do
     changeset = Accounts.change_user(socket.assigns.current_user)
 
+    post =
+      Instagrok.Posts.Post
+      |> Ecto.Query.first()
+      |> Instagrok.Repo.one()
+      |> Instagrok.Repo.preload(:likes)
+
     {:ok,
      socket
-     |> assign(:changeset, changeset)}
+     |> assign(:changeset, changeset)
+     |> assign(:post, post)}
   end
 
   def render(assigns) do
@@ -25,10 +31,13 @@ defmodule InstagrokWeb.ScratchLive do
       </ul>
 
     <.live_component
-      module={FollowComponent}
-      id={:follow}
-      follow_state={"follow"}
+      module={InstagrokWeb.PostLive.LikeComponent}
+      id={@post.id}
+      liked_thing={@post}
+      dimensions={"w-8 h-8"}
+      current_user={@current_user}
     />
+
     """
   end
 

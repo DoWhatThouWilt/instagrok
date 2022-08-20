@@ -11,7 +11,7 @@ defmodule Instagrok.Posts do
 
   def get_post_by_url_id!(id) do
     Repo.get_by!(Post, url_id: id)
-    |> Repo.preload(:user)
+    |> Repo.preload([:user, :likes])
   end
 
   def paginate_user_posts(params, user_id) do
@@ -70,7 +70,10 @@ defmodule Instagrok.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
+  def get_post!(id) do
+    Repo.get!(Post, id)
+    |> Repo.preload([:user, :likes])
+  end
 
   @doc """
   Creates a post.

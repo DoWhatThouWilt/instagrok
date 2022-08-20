@@ -5,6 +5,7 @@ defmodule InstagrokWeb.PostLive.Show do
 
   alias Instagrok.Posts
   alias InstagrokWeb.Uploaders.Avatar
+  alias InstagrokWeb.PostLive.LikeComponent
 
   def mount(%{"id" => id}, _session, socket) do
     # live_redirect linking to the post encodes the url_id, and
@@ -13,5 +14,11 @@ defmodule InstagrokWeb.PostLive.Show do
     post = Posts.get_post_by_url_id!(URI.decode(id))
 
     {:ok, socket |> assign(post: post)}
+  end
+
+  def handle_info({LikeComponent, :update_post_likes, post_id}, socket) do
+    {:noreply,
+     socket
+     |> assign(post: Posts.get_post!(post_id))}
   end
 end
