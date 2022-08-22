@@ -24,7 +24,6 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
 
     <div class="no-scrollbar overflow-y-scroll p-4 flex flex-col">
       <!-- description section -->
-      <%= for _ <- 1..5 do %>
 
       <div class="flex mt-2 max-h-full">
         <%= live_redirect to: Routes.user_profile_path(@socket, :index, @post.user.username) do %>
@@ -46,7 +45,6 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
         </div>
       </div>
 
-      <% end %>
       <!-- end description section -->
     </div>
 

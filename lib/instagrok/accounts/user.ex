@@ -22,6 +22,7 @@ defmodule Instagrok.Accounts.User do
     has_many :followers, Follows, foreign_key: :followed_id
     has_many :posts, Instagrok.Posts.Post
     has_many :likes, Instagrok.Likes.Like
+    has_many :comments, Instagrok.Comments.Comment
 
     timestamps()
   end

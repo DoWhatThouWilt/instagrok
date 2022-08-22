@@ -52,6 +52,10 @@ defmodule Instagrok.Likes do
     Enum.any?(liked_thing.likes, &(&1.user_id == user.id))
   end
 
+  def liked?(nil, _liked_thing) do
+    nil
+  end
+
   @doc """
   Returns the list of likes.
 

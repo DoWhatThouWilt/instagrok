@@ -1,26 +1,40 @@
 defmodule InstagrokWeb.ScratchLive do
   use InstagrokWeb, :live_view
   alias Phoenix.LiveView.JS
-  alias Instagrok.Accounts
+  alias Instagrok.{Comments}
+  alias Instagrok.Comments.Comment
   on_mount InstagrokWeb.UserLiveAuth
 
   def mount(_params, _session, socket) do
-    changeset = Accounts.change_user(socket.assigns.current_user)
+    comment_changeset = Comments.change_comment(%Comment{})
 
     post =
       Instagrok.Posts.Post
       |> Ecto.Query.first()
       |> Instagrok.Repo.one()
-      |> Instagrok.Repo.preload(:likes)
+      |> Instagrok.Repo.preload([:likes, :comments])
+
+    comment = post.comments |> List.first() |> Instagrok.Repo.preload([:user, :likes])
 
     {:ok,
      socket
-     |> assign(:changeset, changeset)
-     |> assign(:post, post)}
+     |> assign(:comment_changeset, comment_changeset)
+     |> assign(:post, post)
+     |> assign(:comment, comment)}
   end
 
   def render(assigns) do
     ~H"""
+    <.form let={f} for={@comment_changeset}>
+      <%= text_input f, :body, phx_hook: "DisableSubmit" %>
+
+      <!-- Disable button when there is no text in the input
+        using JS hook
+    <button type="submit" id="submit" disabled>Submit</button>
+    -->
+    <%= submit "Save", id: "submit", disabled: "" %>
+      </.form>
+
     <button
       class="border text-lg px-6 py-2 rounded"
       phx-click={toggle_dropdown()}
@@ -30,13 +44,14 @@ defmodule InstagrokWeb.ScratchLive do
         <li>Other</li>
       </ul>
 
-    <.live_component
-      module={InstagrokWeb.PostLive.LikeComponent}
-      id={@post.id}
-      liked_thing={@post}
-      dimensions={"w-8 h-8"}
-      current_user={@current_user}
-    />
+    <div class="w-96 bg-red-50">
+      <.live_component
+        module={InstagrokWeb.PostLive.CommentComponent}
+        id={:some_comment}
+        comment={@comment}
+        current_user={@current_user}
+      />
+    </div>
 
     """
   end
