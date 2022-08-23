@@ -46,6 +46,29 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
       </div>
 
       <!-- end description section -->
+
+    <!-- comments section -->
+      <section id="comments" phx-update={@comments_section_update}>
+        <%= for comment <- @comments do %>
+          <.live_component
+               module={InstagrokWeb.PostLive.CommentComponent}
+               id={comment.id}
+               current_user={@current_user}
+               comment={comment}
+               />
+        <% end %>
+      </section>
+
+      <button 
+        phx-click="load-more-comments"
+        class={"#{@load_more_comments_btn} flex w-full justify-center pt-2 focus:outline-none"}
+        >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+      <!-- end comments section -->
+
     </div>
 
     <!-- Botttom Box -->
@@ -102,19 +125,36 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
       <!-- end likes section -->
 
       <!-- comment input section -->
-      <div class="p-2 flex basis-[fit-content] items-center mt-3 border-t-2 border-gray-100">
-        <div class="w-full">
-          <textarea 
-             class="w-full border-0 focus:ring-transparent resize-none"
-             aria-label="Add a comment..."
-             placeholder="Add a comment..."
-             autocomplete="off"
-             autocorrect="off"
-             rows="1"
-             ></textarea>
+      <%= if @current_user do %>
+        <.form 
+        let={f} 
+        for={@changeset}
+        phx-submit="save"
+        class="p-2 flex basis-[fit-content] items-center mt-3 border-t-2 border-gray-100"
+        >
+            <div class="w-full">
+              <%= textarea f, :body, 
+                 phx_hook: "DisableSubmit",
+                 class: "w-full border-0 focus:ring-transparent resize-none",
+                 aria_label: "Add a comment...",
+                 placeholder: "Add a comment...",
+                 autocomplete: "off",
+                 autocorrect: "off",
+                 rows: 1
+                 %>
+            </div>
+            <div>
+              <%= submit "Post", id: "submit", disabled: "",
+              phx_disable_with: "Posting...", class: "text-sky-500 font-bold pb-2 text-sm"
+              %>
+            </div>
+        </.form>
+      <% else %>
+        <div class="p-4 flex items-center mt-3 border-t-2 border-gray-100">
+          <%= link "Log in to comment", to: Routes.user_session_path(@socket, :new),
+          class: "text-sky-600" %>
         </div>
-        <div><button class="text-sky-500 font-bold pb-2 text-sm">Post</button></div>
-      </div>
+      <% end %>
         <!-- end comment input section -->
 
     </div>

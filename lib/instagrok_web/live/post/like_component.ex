@@ -69,6 +69,7 @@ defmodule InstagrokWeb.PostLive.LikeComponent do
   end
 
   defp send_msg_to_parent(liked_thing) do
+    # this is a trick that gets the module name by pattern matching
     %module_name{} = liked_thing
 
     msg =
@@ -76,7 +77,7 @@ defmodule InstagrokWeb.PostLive.LikeComponent do
         Instagrok.Posts.Post ->
           :update_post_likes
 
-        _ ->
+        Instagrok.Comments.Comment ->
           :update_comment_likes
       end
 

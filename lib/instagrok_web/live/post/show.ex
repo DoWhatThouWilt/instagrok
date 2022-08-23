@@ -62,7 +62,7 @@ defmodule InstagrokWeb.PostLive.Show do
     end
   end
 
-  def handle_event("load_more_comments", _, socket) do
+  def handle_event("load-more-comments", _, socket) do
     {:noreply,
      socket
      |> assign(comments_section_update: "append")
