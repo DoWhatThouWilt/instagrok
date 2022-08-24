@@ -36,7 +36,18 @@ defmodule InstagrokWeb.PostLive.Show do
 
     {:noreply,
      socket
-     |> update(:comments, fn comments -> [comment | comments] end)}
+     |> update_comments(comment)}
+  end
+
+  def handle_info({:delete_comment, comment}, socket) do
+    {:noreply,
+     socket
+     |> update_comments(comment)}
+  end
+
+  defp update_comments(socket, comment) do
+    socket
+    |> update(:comments, fn comments -> [comment | comments] end)
   end
 
   defp assign_comments(%{assigns: assigns} = socket) do

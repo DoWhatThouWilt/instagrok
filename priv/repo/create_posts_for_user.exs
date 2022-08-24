@@ -11,7 +11,7 @@ for n <- 1..15 do
     %Post{},
     %{
       description: Lorem.paragraph(4),
-      photo_url: "https://picsum.photos/400/500?random=#{n}"
+      photo_url: "https://picsum.photos/id/#{:rand.uniform(1084)}/400/500"
     },
     user
   )

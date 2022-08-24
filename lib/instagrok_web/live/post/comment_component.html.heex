@@ -1,4 +1,6 @@
-<div class="flex py-2" id={"comment-#{@comment.id}"}>
+<div 
+  class={"flex py-2"} 
+  id={"comment-#{@comment.id}"}>
   <div class="pt-1 w-1/12">
     <%= live_redirect to: Routes.user_profile_path(@socket, :index, @comment.user.username) do %>
       <%= img_tag Avatar.get_thumb(@comment.user.avatar_url, maybe_default: true),
@@ -20,7 +22,13 @@
       <button class="text-xs text-gray-700 focus:outline-none">
         <%= @comment.total_likes %> likes
       </button>
-      <button class="text-xs text-gray-700 focus:outline-none">Reply</button>
+        <button class="text-xs text-gray-700 focus:outline-none">Reply</button>
+      <%= if @current_user.id == @comment.user.id do %>
+        <button 
+          phx-target={@myself}
+          phx-click="delete"
+          class={"text-xs text-gray-700 focus:outline-none"}>Delete</button>
+      <% end %>
     </div>
   </div>
 

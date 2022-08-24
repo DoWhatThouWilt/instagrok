@@ -5,7 +5,7 @@ defmodule Instagrok.Repo.Migrations.CreateComments do
     create table(:comments) do
       add :body, :text
       add :total_likes, :integer, default: 0
-      add :post_id, references(:posts, on_delete: :nothing)
+      add :post_id, references(:posts, on_delete: :delete_all)
       add :user_id, references(:users, on_delete: :nothing)
 
       timestamps()

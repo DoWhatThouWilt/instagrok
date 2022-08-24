@@ -8,6 +8,7 @@ defmodule Instagrok.Comments do
 
   alias Instagrok.Comments.Comment
   alias Instagrok.Posts.Post
+  # alias Instagrok.Likes.Like
 
   @doc """
   returns paginated comments with the following sort behavior:
@@ -17,8 +18,10 @@ defmodule Instagrok.Comments do
   """
   def list_post_comments(assigns, public: public) do
     user = assigns.current_user
+    post_id = assigns.post.id
 
     Comment
+    |> where(post_id: ^post_id)
     |> get_sorting(public, user)
     |> preload([:user, :likes])
     |> Repo.paginate(assigns)
@@ -32,7 +35,10 @@ defmodule Instagrok.Comments do
       # https://manusachi.com/blog/sql-case-ecto#index
       # https://stackoverflow.com/questions/53713241/sql-order-by-specific-value-first-then-ordering
       # sql magicks, put the current user's comments first, then everyone else's
-      queryable |> order_by(fragment("CASE when user_id = ? then 0 else 1 end", ^user.id))
+      queryable
+      |> order_by(
+        fragment("CASE when user_id = ? then 0 else 1 end DESC, inserted_at DESC", ^user.id)
+      )
     end
   end
 
@@ -142,6 +148,16 @@ defmodule Instagrok.Comments do
 
   """
   def delete_comment(%Comment{} = comment) do
+    # likes =
+    #   comment
+    #   |> Repo.preload(:likes)
+    #   |> Map.get(:likes)
+
+    # db design right now for likes doesn't have foreign keys
+    # for the liked things, so instead of using a query I have to settle for this
+    # way which I suppose is inefficient.  This should be fixed in the future.
+    # likes |> Enum.each(&Repo.delete!/1)
+
     Repo.delete(comment)
   end
 

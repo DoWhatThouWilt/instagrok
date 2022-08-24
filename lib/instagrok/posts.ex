@@ -17,6 +17,7 @@ defmodule Instagrok.Posts do
   def paginate_user_posts(params, user_id) do
     Post
     |> where(user_id: ^user_id)
+    |> order_by(desc: :id)
     |> Repo.paginate(params)
   end
 

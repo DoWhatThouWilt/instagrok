@@ -81,7 +81,7 @@ class: "truncate font-bold text-sm text-gray-500 hover:underline"
         <%= if @current_user do %>
           <.live_component
             module={InstagrokWeb.PostLive.LikeComponent}
-            id={@post.id}
+           id={"post_#{@post.id}"}
             liked_thing={@post}
             dimensions={"w-8 h-8"}
             current_user={@current_user}
