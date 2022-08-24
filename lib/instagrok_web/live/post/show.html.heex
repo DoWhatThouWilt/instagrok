@@ -18,6 +18,7 @@
 to: Routes.user_profile_path(@socket, :index, @post.user.username),
 class: "truncate font-bold text-sm text-gray-500 hover:underline"
       %>
+      <p class="text-gray-500 text-xs">comment count: <%= @post.total_comments %></p>
       </div>
       <!-- end post header section -->
     </div>

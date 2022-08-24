@@ -40,6 +40,8 @@ defmodule InstagrokWeb.PostLive.Show do
   end
 
   def handle_info({:delete_comment, comment}, socket) do
+    IO.puts("recieved comment")
+
     {:noreply,
      socket
      |> update_comments(comment)}

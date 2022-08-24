@@ -6,17 +6,13 @@ defmodule InstagrokWeb.PostLive.CommentComponent do
 
   def handle_event("delete", _params, socket) do
     case Comments.delete_comment(socket.assigns.comment) do
-      {:ok, comment} ->
-        send(self(), {:delete_comment, comment})
+      {:ok, %{delete_comment: deleted_comment}} ->
+        send(self(), {:delete_comment, deleted_comment})
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Deleted comment successfully!")}
+        {:noreply, socket}
 
-      {:error, _changeset} ->
-        {:noreply,
-         socket
-         |> put_flash(:danger, "There was a problem deleting the comment!")}
+      {:error, _} ->
+        {:noreply, socket}
     end
   end
 end

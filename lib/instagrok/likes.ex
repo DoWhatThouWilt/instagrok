@@ -8,19 +8,24 @@ defmodule Instagrok.Likes do
 
   alias Instagrok.Likes.Like
   alias Instagrok.Accounts.User
+  alias Instagrok.Comments.Comment
+  alias Instagrok.Posts.Post
 
   @doc """
   Creates a like with a given %User{} and the liked post or comment
   """
-  def create_like(%User{} = user, liked_thing) do
-    # creates a like with the user_id
-    # user = Ecto.build_assoc(user, :likes)
-    # creates the a like with the liked_id (that is supposed to be the id of the liked post)
-    # being the id of the post, and then, adds the user_id from the previous struct created
-    # using the %{user_id: value} field (3rd parameter of build_assoc)
-    # like = Ecto.build_assoc(liked_thing, :likes, user)
-    like = %Like{liked_id: liked_thing.id, user_id: user.id}
 
+  def create_like(%User{} = user, %Post{} = post) do
+    like = %Like{post_id: post.id, user_id: user.id}
+    like_transaction(like, post)
+  end
+
+  def create_like(%User{} = user, %Comment{} = comment) do
+    like = %Like{comment_id: comment.id, user_id: user.id}
+    like_transaction(like, comment)
+  end
+
+  defp like_transaction(like, liked_thing) do
     # __struct__ returns the module of the struct, here is it used to diffrenciate
     # between the Post or the Comment
     update_total_likes = liked_thing.__struct__ |> where(id: ^liked_thing.id)

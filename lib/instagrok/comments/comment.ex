@@ -8,7 +8,7 @@ defmodule Instagrok.Comments.Comment do
     field :total_likes, :integer
     belongs_to :post, Instagrok.Posts.Post
     belongs_to :user, Instagrok.Accounts.User
-    has_many :likes, Instagrok.Likes.Like, foreign_key: :liked_id
+    has_many :likes, Instagrok.Likes.Like
 
     timestamps()
   end

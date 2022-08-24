@@ -148,17 +148,19 @@ defmodule Instagrok.Comments do
 
   """
   def delete_comment(%Comment{} = comment) do
-    # likes =
-    #   comment
-    #   |> Repo.preload(:likes)
-    #   |> Map.get(:likes)
+    update_total_comments = Post |> where(id: ^comment.post_id)
 
-    # db design right now for likes doesn't have foreign keys
-    # for the liked things, so instead of using a query I have to settle for this
-    # way which I suppose is inefficient.  This should be fixed in the future.
-    # likes |> Enum.each(&Repo.delete!/1)
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:delete_comment, comment)
+    |> Ecto.Multi.update_all(:update_total_comments, update_total_comments,
+      inc: [total_comments: -1]
+    )
+    |> Repo.transaction()
 
-    Repo.delete(comment)
+    # |> case do
+    #   {:ok, %{delete_comment: deleted_comment}} ->
+    #     deleted_comment
+    # end
   end
 
   @doc """

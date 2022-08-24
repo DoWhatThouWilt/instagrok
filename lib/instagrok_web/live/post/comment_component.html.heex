@@ -1,5 +1,5 @@
 <div 
-  class={"flex py-2"} 
+  class={"flex py-2 #{if @comment.__meta__.state == :deleted, do: "hidden"}"} 
   id={"comment-#{@comment.id}"}>
   <div class="pt-1 w-1/12">
     <%= live_redirect to: Routes.user_profile_path(@socket, :index, @comment.user.username) do %>
